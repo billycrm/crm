@@ -1,0 +1,252 @@
+openapi: 3.0.0
+info:
+  title: API Пользователей и Аутентификации
+  version: 1.0.0
+  description: API для управления пользователями и аутентификации.
+servers:
+  - url: /api/v1
+tags:
+  - name: Аутентификация
+    description: Эндпоинты для регистрации и авторизации
+  - name: Пользователи
+    description: Эндпоинты для управления пользователями
+
+paths:
+  /register:
+    post:
+      tags:
+        - Аутентификация
+      summary: Регистрация пользователя
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                username:
+                  type: string
+                name:
+                  type: string
+                email:
+                  type: string
+                password:
+                  type: string
+              required:
+                - username
+                - name
+                - email
+                - password
+      responses:
+        201:
+          description: Пользователь успешно зарегистрирован
+        400:
+          description: Все поля обязательны для заполнения
+        409:
+          description: Пользователь с таким именем пользователя или электронной почтой уже существует
+
+  /login:
+    post:
+      tags:
+        - Аутентификация
+      summary: Логин пользователя
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                username:
+                  type: string
+                password:
+                  type: string
+              required:
+                - username
+                - password
+      responses:
+        200:
+          description: Успешная аутентификация
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  access_token:
+                    type: string
+        400:
+          description: Имя пользователя и пароль обязательны для заполнения
+        401:
+          description: Неверное имя пользователя или пароль
+
+  /profile:
+    get:
+      tags:
+        - Аутентификация
+      summary: Профиль пользователя
+      security:
+        - bearerAuth: []
+      responses:
+        200:
+          description: Информация о пользователе
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: integer
+                  username:
+                    type: string
+                  name:
+                    type: string
+                  email:
+                    type: string
+        404:
+          description: Пользователь не найден
+
+  /users:
+    post:
+      tags:
+        - Пользователи
+      summary: Создание нового пользователя
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                username:
+                  type: string
+                password:
+                  type: string
+                email:
+                  type: string
+                name:
+                  type: string
+              required:
+                - username
+                - password
+                - email
+                - name
+      responses:
+        201:
+          description: Пользователь успешно создан
+        400:
+          description: Все поля обязательны для заполнения
+        409:
+          description: Пользователь с таким именем пользователя или электронной почтой уже существует
+
+    get:
+      tags:
+        - Пользователи
+      summary: Список всех пользователей
+      responses:
+        200:
+          description: Список всех пользователей
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    id:
+                      type: integer
+                    username:
+                      type: string
+                    name:
+                      type: string
+                    email:
+                      type: string
+
+  /users/{id}:
+    get:
+      tags:
+        - Пользователи
+      summary: Получение информации о пользователе по ID
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+      responses:
+        200:
+          description: Информация о пользователе
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: integer
+                  username:
+                    type: string
+                  name:
+                    type: string
+                  email:
+                    type: string
+        404:
+          description: Пользователь не найден
+
+    put:
+      tags:
+        - Пользователи
+      summary: Обновление информации о пользователе
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                username:
+                  type: string
+                email:
+                  type: string
+                name:
+                  type: string
+                password:
+                  type: string
+                email_confirmed:
+                  type: boolean
+                user_confirmed:
+                  type: boolean
+                admin:
+                  type: boolean
+      responses:
+        200:
+          description: Пользователь успешно обновлен
+        404:
+          description: Пользователь не найден
+
+    delete:
+      tags:
+        - Пользователи
+      summary: Удаление пользователя
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+      responses:
+        200:
+          description: Пользователь успешно удален
+        404:
+          description: Пользователь не найден
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
