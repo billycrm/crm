@@ -136,7 +136,8 @@ export default {
             Authorization: `Bearer ${token}`
           }
         });
-        // Reload the memberships to reflect the newly created one
+        // Remount the component to refresh the data
+        this.$router.go(0);
         this.created();
       } catch (error) {
         alert('Failed to create membership');
