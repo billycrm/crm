@@ -79,12 +79,27 @@ services:
       unless-stopped
     ports:
       - "8080:80"
-#    profiles:
-#      - testadmin
+    profiles:
+      - vuex
     depends_on:
       - db
     networks:
         - backend
+  user-frontend-pinia:
+    build: ./userfrontendpinia
+    container_name: user-frontend
+    env_file:
+      - .env
+    restart:
+      unless-stopped
+    ports:
+      - "8080:80"
+    profiles:
+      - vuex
+    depends_on:
+      - db
+    networks:
+      - backend
 
 networks:
   backend:

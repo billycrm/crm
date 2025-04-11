@@ -22,7 +22,6 @@ class User(db.Model):
             'name': self.name,
             'email_confirmed': self.email_confirmed,
             'user_confirmed': self.user_confirmed,
-            'membership_type': self.membership_type.name
         }
 
     def __repr__(self):

@@ -8,7 +8,7 @@
       <v-col cols="12" sm="8" md="6">
         <v-card class="pa-5 text-center custom-card">
           <v-card-title>
-            <h2 class="display-2 mb-4">Welcome to Gym Management</h2>
+            <h2 class="display-2 mb-4">Welcome to Gym Management, {{ user?.name }}! </h2>
           </v-card-title>
           <v-card-text>
             <v-row justify="center" class="mb-4">
@@ -58,20 +58,22 @@
 </template>
 
 <script>
+import {th} from "vuetify/locale";
+
 export default {
   name: 'Home',
   data() {
-    return {
-      isAuthenticated: false,
-    };
   },
-  created() {
-    this.checkAuth();
-  },
-  methods: {
-    checkAuth() {
-      const token = localStorage.getItem('token');
-      this.isAuthenticated = !!token;
+  computed: {
+     user () {
+       let user = this.$store.getters.user
+       if (!user) {
+         this.$store.dispatch('getUser')
+       }
+       return user;
+    },
+    isAuthenticated() {
+      return this.$store.getters.isAuthenticated;
     }
   }
 };

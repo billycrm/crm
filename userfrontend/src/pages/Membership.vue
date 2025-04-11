@@ -79,12 +79,12 @@
 
 <script>
 import axios from 'axios';
+
 export default {
   name: 'Membership',
   data() {
     return {
       isLoading: true,
-      memberships: [],
       membership_type: '',
       start_date: '',
       end_date: '',
@@ -98,21 +98,23 @@ export default {
       ]
     };
   },
+  computed: {
+    memberships() {
+      return this.$store.state.memberships;
+    }
+  },
+  watch : {
+    memberships() {
+      console.log('qwe')
+      this.isLoading = false;
+    }
+  },
   async created() {
     if (!this.$store.state.isAuthenticated)
       this.$router.push({ name: 'Login' });
-    try {
-      const response = await axios.get('http://localhost:5000/api/v1/memberships', {
-        headers: {
-          Authorization: `Bearer ${token}`
-        }
-      });
-      this.memberships = response.data;
-      console.log(this.memberships)
-    } catch (error) {
-      console.log('No memberships found.', error);
-    } finally {
-      this.isLoading = false;
+    this.$store.dispatch('getMemberships');
+    if (this.$store.state.lastFetched === null) {
+      this.isLoading = true;
     }
   },
   methods: {
@@ -140,7 +142,7 @@ export default {
         alert('Failed to create membership');
       }
     }
-  }
+  },
 };
 </script>
 
