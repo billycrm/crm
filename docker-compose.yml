@@ -95,7 +95,7 @@ services:
     ports:
       - "8080:80"
     profiles:
-      - vuex
+      - pinia
     depends_on:
       - db
     networks:
