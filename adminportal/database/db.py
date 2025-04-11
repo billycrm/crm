@@ -24,7 +24,7 @@ def create_db(app, jwt):
 
     if users == 0:
         from database.models.user import User
-        admin = User(username='admin', password='11211121', admin=True, name='Администратор', email="billy@admin.admin",
+        admin = User(username='admin', password=generate_password_hash('1121'.encode('utf-8')).decode('utf-8'), admin=True, name='Администратор', email="billy@admin.admin",
                      email_confirmed=True, user_confirmed=True)
         db.session.add(admin)
         db.session.commit()

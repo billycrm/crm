@@ -4,7 +4,8 @@ info:
   version: 1.0.0
   description: API для управления пользователями и аутентификации.
 servers:
-  - url: /api/v1
+  - url: http://localhost:5000/api/v1
+    description: New server
 tags:
   - name: Аутентификация
     description: Эндпоинты для регистрации и авторизации

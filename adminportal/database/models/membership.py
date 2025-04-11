@@ -10,6 +10,7 @@ class MembershipTypes(enum.Enum):
 class Membership(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     membership_type = db.Column(db.Enum(MembershipTypes) , nullable=False)
+    active = db.Column(db.Boolean, nullable=False, default=True)
     start_date = db.Column(db.Date, nullable=False)
     end_date = db.Column(db.Date, nullable=False)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)

@@ -99,11 +99,8 @@ export default {
     };
   },
   async created() {
-    const token = localStorage.getItem('token');
-    if (!token) {
+    if (!this.$store.state.isAuthenticated)
       this.$router.push({ name: 'Login' });
-      return;
-    }
     try {
       const response = await axios.get('http://localhost:5000/api/v1/memberships', {
         headers: {

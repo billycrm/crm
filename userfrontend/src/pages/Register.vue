@@ -15,6 +15,9 @@
               <v-text-field
                 v-model="username"
                 label="Username"
+                :rules="[
+                  (v) => !!v || 'Username is required',
+                  ]"
                 required
                 class="mb-3"
               ></v-text-field>
@@ -27,6 +30,11 @@
               <v-text-field
                 v-model="email"
                 label="Email"
+                type="email"
+                :rules="[
+                  (v) => !!v || 'Email is required',
+                  (v) => /.+@.+\..+/.test(v) || 'Email must be valid'
+                ]"
                 required
                 class="mb-3"
               ></v-text-field>
@@ -36,6 +44,9 @@
                 type="password"
                 required
                 class="mb-4"
+                :rules="[
+                  (v) => !!v || 'Password is required',
+                  ]"
               ></v-text-field>
               <v-btn
                 type="submit"
@@ -68,6 +79,11 @@ export default {
   },
   methods: {
     async register() {
+      // validate
+      if (!this.username || !this.name || !this.email || !this.password) {
+        alert('Please fill in all fields.');
+        return;
+      }
       try {
         await axios.post('http://localhost:5000/api/v1/register', {
           username: this.username,
@@ -77,7 +93,14 @@ export default {
         });
         this.$router.push({ name: 'Login' });
       } catch (error) {
-        alert('Registration failed');
+
+        if (error.response && error.response.status === 400) {
+          console.error('Login failed:', error.response.data.message);
+          alert('Login failed: ' + error.response.data.message);
+        } else {
+          console.error('An unexpected error occurred:', error);
+          alert('An unexpected error occurred. Please try again later.');
+        }
       }
     }
   }

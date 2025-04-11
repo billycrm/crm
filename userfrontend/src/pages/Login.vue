@@ -45,6 +45,7 @@ export default {
   },
   methods: {
     async login() {
+      // validate
       try {
         const response = await axios.post('http://localhost:5000/api/v1/login', {
           username: this.username,
@@ -54,7 +55,14 @@ export default {
         this.$store.dispatch('login', response.data.access_token);
         this.$router.push({ name: 'Membership' });
       } catch (error) {
-        alert('Login failed');
+
+        if (error.response && error.response.status === 400) {
+          console.error('Login failed:', error.response.data.message);
+          alert('Login failed: ' + error.response.data.message);
+        } else {
+          console.error('An unexpected error occurred:', error);
+          alert('An unexpected error occurred. Please try again later.');
+        }
       }
     }
   }
