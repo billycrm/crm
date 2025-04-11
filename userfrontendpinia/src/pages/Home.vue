@@ -26,7 +26,7 @@
                 </v-col>
               </div>
               <div v-else>
-                <v-col >
+                <v-col>
                   <v-btn
                     :to="{ name: 'Login' }"
                     color="primary"
@@ -37,7 +37,7 @@
                     Login
                   </v-btn>
                 </v-col>
-                <v-col >
+                <v-col>
                   <v-btn
                     :to="{ name: 'Register' }"
                     color="secondary"
@@ -58,24 +58,28 @@
 </template>
 
 <script>
-import {piniaStore} from '../store/index.js';
+import {usePiniaStore} from '../store/index.js';
 
-const store = piniaStore();
 
 export default {
   name: 'Home',
+  setup() {
+    const storePinia = usePiniaStore();
+
+    return { storePinia };
+  },
   data() {
   },
   computed: {
-     user () {
-       let user = store.getters.user
-       if (!user) {
-         store.dispatch('getUser')
-       }
-       return user;
+    user() {
+      let user = this.storePinia.GUser
+      if (!user) {
+        this.storePinia.getUser();
+      }
+      return user;
     },
     isAuthenticated() {
-      return store.getters.isAuthenticated;
+      return this.storePinia.GIsAuthenticated
     }
   }
 };

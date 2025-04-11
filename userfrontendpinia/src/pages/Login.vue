@@ -34,11 +34,14 @@
 </template>
 <script>
 import axios from 'axios';
-import {piniaStore} from '../store/index.js';
-
-const store = piniaStore();
+import { usePiniaStore} from '../store/index.js';
 export default {
   name: 'Login',
+  setup() {
+    const storePinia = usePiniaStore();
+
+    return { storePinia };
+  },
   data() {
     return {
       username: '',
@@ -54,7 +57,7 @@ export default {
           password: this.password
         });
         // call login action from Vuex store
-        store.dispatch('login', response.data.access_token);
+        await this.storePinia.login(response.data.access_token)
         this.$router.push({ name: 'Membership' });
       } catch (error) {
 

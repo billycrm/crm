@@ -79,11 +79,15 @@
 
 <script>
 import axios from 'axios';
-import {piniaStore} from '../store/index.js';
+import {usePiniaStore} from '../store/index.js';
 
-const store = piniaStore();
 export default {
   name: 'Membership',
+  setup() {
+    const storePinia = usePiniaStore();
+
+    return {storePinia};
+  },
   data() {
     return {
       isLoading: true,
@@ -92,38 +96,40 @@ export default {
       end_date: '',
       membershipTypes: ['monthly', 'annually'],
       headers: [
-        { title: 'ID', key: 'id' },
-        { title: 'Membership Type', key: 'membership_type' },
-        { title: 'Start Date', key: 'start_date' },
-        { title: 'End Date', key: 'end_date' },
-        { title: 'Active', key: 'active' }
+        {title: 'ID', key: 'id'},
+        {title: 'Membership Type', key: 'membership_type'},
+        {title: 'Start Date', key: 'start_date'},
+        {title: 'End Date', key: 'end_date'},
+        {title: 'Active', key: 'active'}
       ]
     };
   },
   computed: {
     memberships() {
-      return store.state.memberships;
+      return this.storePinia.GMemberships;
     }
   },
-  watch : {
+  watch: {
     memberships() {
       console.log('qwe')
       this.isLoading = false;
     }
   },
-  async created() {
-    if (!this.$store.state.isAuthenticated)
-      this.$router.push({ name: 'Login' });
-    store.dispatch('getMemberships');
-    if (store.state.lastFetched === null) {
+  created() {
+    if (!this.storePinia.token)
+      this.$router.push({name: 'Login'});
+    console.log("component created")
+    this.storePinia.getMemberships();
+    if (this.storePinia.GLastFetched === null) {
       this.isLoading = true;
     }
-  },
+  }
+  ,
   methods: {
     async createMembership() {
       const token = localStorage.getItem('token');
       if (!token) {
-        this.$router.push({ name: 'Login' });
+        this.$router.push({name: 'Login'});
         return;
       }
 
@@ -153,12 +159,15 @@ html, body, #app, .v-application {
   height: 100%;
   margin: 0;
 }
+
 .fill-height {
   height: 100%;
 }
+
 .mb-3 {
   margin-bottom: 1rem;
 }
+
 .mb-4 {
   margin-bottom: 1.5rem;
 }

@@ -1,89 +1,80 @@
 // store/index.js
-import { defineStore } from 'pinia'
+import {defineStore} from 'pinia'
 import router from "@/router/index.js";
 import axios from 'axios';
 
-export const piniaStore = defineStore('mainStore', {
-  state: {
+export const usePiniaStore = defineStore('piniaStore', {
+  state: () => ({
     isAuthenticated: !!localStorage.getItem('token'),
     token: localStorage.getItem('token'),
     user: null,
     memberships: [],
     lastFetched: null,
-  },
+  }),
   getters: {
-    isAuthenticated: (state) => state.isAuthenticated,
-    token: (state) => state.token,
-    memberships: (state) => state.memberships,
-    user: (state) => {
+    GIsAuthenticated: (state) => state.isAuthenticated,
+    GToken: (state) => state.token,
+    GMemberships: (state) => state.memberships,
+    GUser: (state) => {
       if (state.user) {
         return state.user;
       } else {
         return null;
       }
-    }
-  },
-  mutations: {
-    SET_AUTH(state, value) {
-      state.isAuthenticated = value;
     },
-    SET_ACCESS_TOKEN(state, value) {
-      state.token = value;
-    },
-    SET_MEMBERSHIPS(state, memberships) {
-      state.memberships = memberships;
-    },
-    SET_USER(state, user) {
-      state.user = user;
+    GLastFetched: (state) => {
+      return state.lastFetched;
     },
   },
   actions: {
-    login({ commit }, token) {
+    async login(token) {
       localStorage.setItem('token', token);
-      commit('SET_AUTH', true);
-      commit('SET_ACCESS_TOKEN', token);
+      this.token = token;
+      this.isAuthenticated = true;
+      await this.getUser();
     },
-    logout({ commit }) {
+    logout() {
       localStorage.removeItem('token');
-      commit('SET_AUTH', false);
-      commit('SET_ACCESS_TOKEN', null);
-      commit('SET_USER', null);
+      this.token = null;
+      this.isAuthenticated = false;
+      this.user = null;
       router.push('/');
     },
-    async getUser({commit, state}) {
-      if (!state.token) {
+    async getUser() {
+      if (!this.token) {
         console.error('No token found, user not authenticated');
         return;
       }
-      if (state.user) {
-        console.log('User data already in state:', state.user);
+      if (this.user) {
+        console.log('User data already in state:', this.user);
         return;
       }
       try {
         const response = await axios.get('http://localhost:5000/api/v1/users/1', {
           headers: {
-            Authorization: `Bearer ${state.token}`,
+            Authorization: `Bearer ${this.token}`,
           }
         });
-        commit('SET_USER', response.data);
+
+        this.user = response.data;
         console.log('User data fetched:', response.data);
       } catch (error) {
         console.error('Error fetching user data:', error);
       }
     },
-    async getMemberships({commit, state}) {
-      if (state.lastFetched && (Date.now() - state.lastFetched < 60000)) {
+    async getMemberships() {
+      if (this.lastFetched && (Date.now() - this.lastFetched < 60000)) {
         console.log('Using cached memberships');
         return;
       }
       try {
         const response = await axios.get('http://localhost:5000/api/v1/memberships', {
           headers: {
-            Authorization: `Bearer ${state.token}`,
+            Authorization: `Bearer ${this.token}`,
           }
         });
-        commit('SET_MEMBERSHIPS', response.data);
-        console.log(state.memberships)
+        this.memberships = response.data;
+        console.log(this.memberships)
       } catch (error) {
         console.log('No memberships found.', error);
       }

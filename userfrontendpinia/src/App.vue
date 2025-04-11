@@ -23,14 +23,28 @@
 </template>
 
 <script>
-import { mapState, mapActions } from 'vuex';
+import {usePiniaStore} from "@/store/index.js";
 
 export default {
+  setup() {
+    const storePinia = usePiniaStore();
+
+    return { storePinia };
+  },
+  data() {
+  },
   computed: {
-    ...mapState(['isAuthenticated', 'user']),
+    isAuthenticated() {
+      return this.storePinia.GIsAuthenticated;
+    },
+    user() {
+      return this.storePinia.GUser;
+    },
   },
   methods: {
-    ...mapActions(['login', 'logout']),
+    logout() {
+      this.storePinia.logout();
+    },
   },
 };
 </script>
